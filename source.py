@@ -5,8 +5,6 @@ from graphs import *
 import binascii
 import random
 
-
-
 class Source:
     def __init__(self, monotone, filename=None):
         # The initialization procedure of source object
@@ -28,9 +26,9 @@ class Source:
             else:               
                 # Send monotone (the payload is all 1s for 
                 # monotone bits)   
-                databits = [1]*monotone
-                payload = databits + self.get_header(monotone, "monotone")
-
+                databits = [1]*self.monotone
+                databitsString = ''.join(databits)
+                payload = databitsString + self.get_header(self.monotone, "monotone")
             return payload, databits
 
     def text2bits(self, filename):
@@ -48,11 +46,11 @@ class Source:
     def get_header(self, payload_length, srctype): 
         # Given the payload length and the type of source 
         # (image, text, monotone), form the header
-        header = bin(x)
+        header = bin(payload_length)
         if srctype == "image":
             header = "00" + header
-        else if srctype = "text":
+        elif srctype == "text":
             header = "01" + header
-        else if srctype = "monotone":
+        elif srctype == "monotone":
             header = "10" + header
         return header
