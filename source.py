@@ -22,7 +22,6 @@ class Source:
                 else:           
                     # Assume it's text 
                     databits = self.text2bits(self.fname)   
-
                     payload = self.get_header(len(databits), "text") + databits         
             else:               
                 # Send monotone (the payload is all 1s for 
