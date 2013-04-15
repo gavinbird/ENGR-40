@@ -4,7 +4,7 @@ import Image
 from graphs import *
 import binascii
 import random
-
+import StringIO
 
 class Sink:
     def __init__(self):
@@ -47,9 +47,19 @@ class Sink:
         text = binascii.unhexlify('%x' % n)
         return text
 
-    def image_from_bits(self, bits,filename):
+    def image_from_bits(self, bits, filename):
         # Convert the received payload to an image and save it
         # No return value required .
+        size = 32, 32
+        imageString = "0b"
+        for bit in bits:
+            imageString += str(bit)
+        n = int(imageString, 2)
+        imageText = binascii.unhexlify('%x' % n)
+        buff = StringIO.StringIO(imageText)
+        buff.seek(0)
+        im = Image.open(buff)
+        im.save(filename)
         pass 
 
     def read_header(self, header_bits): 

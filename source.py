@@ -1,6 +1,7 @@
 # audiocom library: Source and sink functions
 import common_srcsink as common
 import Image
+import StringIO
 from graphs import *
 import binascii
 import random
@@ -28,7 +29,6 @@ class Source:
                 # monotone bits)
                 databits = [1]*self.monotone   
                 payload = self.get_header(self.monotone, "monotone") + databits
-            print len(payload)
             return numpy.array(payload), numpy.array(databits)
 
     def text2bits(self, filename):
@@ -45,22 +45,16 @@ class Source:
     def bits_from_image(self, filename):
         # Given an image, convert to bits
         im = Image.open(filename)
-        pix = im.load()
+        im.convert('L')
+        output = StringIO.StringIO()
+        im.save(output, 'PNG')
+        imString = output.getvalue()
+        output.close()
+        bitstring = bin(reduce(lambda x, y: 256*x+y, (ord(c) for c in imString), 0))
+        bitstring = bitstring[2:]
         bits = []
-        for x in range(im.size[0]):
-            for y in range(im.size[1]):
-                newbits1 = bin(pix[x,y][0])
-                newbits1 = newbits1[2:]
-                while(len(newbits1) < 8):
-                    newbits1 = "0" + newbits1
-                newbits2 = bin(pix[x,y][1])
-                newbits2 = newbits2[2:]
-                while(len(newbits2) < 8):
-                    newbits2 = "0" + newbits2
-                for bit in newbits1:
-                    bits.append(int(bit))
-                for bit in newbits2:
-                    bits.append(int(bit))
+        for bit in bitstring:
+            bits.append(int(bit))
         return bits
 
     def get_header(self, payload_length, srctype): 
