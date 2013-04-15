@@ -16,6 +16,6 @@ def hamming(s1,s2):
     	shorter = len2
     for i in range(shorter):
     	if s2[i] != s1[i]:
-    		hamming_d ++
+    		hamming_d += 1
     ber = hamming_d / shorter
     return hamming_d, ber

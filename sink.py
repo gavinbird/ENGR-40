@@ -25,12 +25,27 @@ class Sink:
         # If its an image, save it as "rcd-image.png"
         # If its a text, just print out the text
         
-        # Return the received payload for comparison purposes
-        return rcd_payload
+        dataType, payloadLength = self.read_header(recd_bits[0:32])
+        payloadEnd = 32 + payloadLength
+        recd_payload = recd_bits[32:payloadEnd]
+        if(dataType == "00"):
+            self.image_from_bits(recd_payload, "rcd-image.png")
+        elif(dataType == "01"):
+            print self.bits2text(recd_payload)
+        elif(dataType == "10"):
+            print "Received monotone"
 
-    def bits2text(self, bits):
+        # Return the received payload for comparison purposes
+        return recd_bits
+
+    def bits2text(self, recd_bits):
         # Convert the received payload to text (string)
-        return  text
+        bits = "0b"
+        for bit in recd_bits:
+            bits += str(bit)
+        n = int(bits, 2)
+        text = binascii.unhexlify('%x' % n)
+        return text
 
     def image_from_bits(self, bits,filename):
         # Convert the received payload to an image and save it
@@ -40,7 +55,12 @@ class Sink:
     def read_header(self, header_bits): 
         # Given the header bits, compute the payload length
         # and source type (compatible with get_header on source)
- 
+        srctype = str(header_bits[0]) + str(header_bits[1])
+        header_bits = header_bits[2:]
+        payload_length = ""
+        for bit in header_bits:
+            payload_length += str(bit) 
+        payload_length = int(payload_length, 2)
         print '\tRecd header: ', header_bits
         print '\tLength from header: ', payload_length
         print '\tSource type: ', srctype
